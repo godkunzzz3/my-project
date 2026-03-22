@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: tlias-web-management
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  #mysql????
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tlias
+    username: root
+    password: 123456
+mybatis:
+  # 扫描所有 Mapper XML 文件（支持 resources 根目录/子目录下的所有 *Mapper.xml）
+  mapper-locations: classpath:**/*Mapper.xml
+  # 实体类别名包（简化 XML 中的 parameterType/resultType 写法）
+  type-aliases-package: org.example.tliaswebmanagement.pojo
+  configuration:
+    # 开启 SQL 日志打印（调试必备，能看到执行的 SQL 和参数）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 开启下划线转驼峰（比如数据库的 begin_date 自动映射到实体类的 beginDate）
+    map-underscore-to-camel-case: true
+    # 补充：开启懒加载（可选，非必需）
+    lazy-loading-enabled: false
+    # 补充：关闭缓存（开发阶段建议关闭，避免数据不一致）
+    cache-enabled: false
+#spring事务管理日志
+logging:
+  level:
+    org.springframework.jdbc.support.JdbcTransactionManager: debug
+

@@ -2,6 +2,7 @@ package org.example.tliaswebmanagement.service;
 
 import org.example.tliaswebmanagement.pojo.Emp;
 import org.example.tliaswebmanagement.pojo.EmpQueryParam;
+import org.example.tliaswebmanagement.pojo.LoginInfo;
 import org.example.tliaswebmanagement.pojo.PageResult;
 
 import java.util.List;
@@ -28,4 +29,6 @@ public interface EmpService {
 
 
     List<Emp> list();
+
+    LoginInfo login(Emp emp);
 }

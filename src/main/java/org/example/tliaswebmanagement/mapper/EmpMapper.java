@@ -44,4 +44,9 @@ public interface EmpMapper {
 
     @Select("select * from emp where job=1")
     List<Emp> allEmpList();
+    /**
+     * 根据用户名和密码查询员工信息
+     */
+    @Select("select * from emp where username = #{username} and password = #{password}")
+    Emp getUsernameAndPassword(Emp emp);
 }

@@ -14,7 +14,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmpServiceImpl implements EmpService {
@@ -35,6 +37,7 @@ public class EmpServiceImpl implements EmpService {
         PageInfo<Emp> pageInfo = new PageInfo<>(empList);
         return new PageResult<>(pageInfo.getTotal(), pageInfo.getList());
     }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void save(Emp emp) {
@@ -50,7 +53,7 @@ public class EmpServiceImpl implements EmpService {
             //3. 保存员工的工作经历信息 - 批量
             Integer empId = emp.getId();
             List<EmpExpr> exprList = emp.getExprList();
-            if(!CollectionUtils.isEmpty(exprList)){
+            if (!CollectionUtils.isEmpty(exprList)) {
                 exprList.forEach(empExpr -> empExpr.setEmpId(empId));
                 empExprMapper.insertBatch(exprList);
             }
@@ -61,10 +64,10 @@ public class EmpServiceImpl implements EmpService {
         }
 
     }
+
     @Transactional(rollbackFor = {Exception.class})
     @Override
-    public  void DeleteByIds(List<Integer> ids)
-    {
+    public void DeleteByIds(List<Integer> ids) {
 
         //1. 根据ID批量删除员工基本信息
         empMapper.deleteByIds(ids);
@@ -75,9 +78,9 @@ public class EmpServiceImpl implements EmpService {
     }
 
     @Override
-    public Emp getInfo(Integer id){
+    public Emp getInfo(Integer id) {
 
-        return  empMapper.getById(id);
+        return empMapper.getById(id);
     }
 
     @Transactional
@@ -93,7 +96,7 @@ public class EmpServiceImpl implements EmpService {
         //3. 新增员工的工作经历数据 【新增新的】
         Integer empId = emp.getId();
         List<EmpExpr> exprList = emp.getExprList();
-        if(!CollectionUtils.isEmpty(exprList)){
+        if (!CollectionUtils.isEmpty(exprList)) {
             exprList.forEach(empExpr -> empExpr.setEmpId(empId));
             empExprMapper.insertBatch(exprList);
         }
@@ -102,9 +105,25 @@ public class EmpServiceImpl implements EmpService {
     @Override
     public List<Emp> list() {
 
-         List<Emp> allEmpList = empMapper.allEmpList();
+        List<Emp> allEmpList = empMapper.allEmpList();
         // 2. 解析查询结果，封装返回对象
-      return allEmpList;
+        return allEmpList;
 
+    }
+
+    @Override
+    public LoginInfo login(Emp emp) {
+        Emp empLogin = empMapper.getUsernameAndPassword(emp);
+        if (empLogin != null) {
+            //1. 生成JWT令牌
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("id", empLogin.getId());
+            dataMap.put("username", empLogin.getUsername());
+
+            String jwt = JwtUtil.generateToken(dataMap);
+            LoginInfo loginInfo = new LoginInfo(empLogin.getId(), empLogin.getUsername(), empLogin.getName(), jwt);
+            return loginInfo;
+        }
+        return null;
     }
 }
